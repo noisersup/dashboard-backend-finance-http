@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/noisersup/dashboard-backend-finance-http/httphandlers"
+	"github.com/noisersup/dashboard-backend-finance-http/logs"
 	"github.com/noisersup/dashboard-backend-finance-http/pb"
 	"google.golang.org/grpc"
 )
@@ -22,6 +23,7 @@ type ServiceConfig struct{
 }
 
 func main(){
+	method := "main()"
 	config := getVars()
 
 	grpcPayload := fmt.Sprintf("%s:%d",config.GRPCAddress,config.GRPCPort)
@@ -43,7 +45,7 @@ func main(){
 	r.HandleFunc("/finances",h.GetGroups).Methods("GET")
 
 	log.Printf("Initializing http server on :%d",config.HttpPort)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf("%d",config.HttpPort),r))
+	logs.FatalErrorHandler(method,http.ListenAndServe(fmt.Sprintf(":%d",config.HttpPort),r))
 }
 
 
