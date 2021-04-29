@@ -4,7 +4,7 @@ import "github.com/noisersup/dashboard-backend-finance-http/pb"
 
 
 type GetResponse struct{
-	Groups	[]pb.Groups `json:"groups"`
+	Groups	[]pb.Group `json:"groups"`
 	Error	string `json:"error"`
 }
 

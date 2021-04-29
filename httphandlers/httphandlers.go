@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	hu "github.com/noisersup/dashboard-backend-finance-http/httphandlers/utils"
+	"github.com/noisersup/dashboard-backend-finance-http/httphandlers/models"
+	"github.com/noisersup/dashboard-backend-finance-http/httphandlers/utils"
 	"github.com/noisersup/dashboard-backend-finance-http/logs"
 	"github.com/noisersup/dashboard-backend-finance-http/pb"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -24,11 +25,19 @@ func (h *HttpHandlers) GetGroups(w http.ResponseWriter, r *http.Request){
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(time.Second*10))
 	defer cancel()
 
+	response := models.GetResponse{}
+
 	groups, err := h.grpcClient.GetGroups(ctx,&emptypb.Empty{})
 	if err != nil{
 		logs.ErrorHandler(method,err)
+		response.Error = err.Error()
+		utils.SendResponse(w,response,http.StatusInternalServerError)
 		return
 	}
 
-	hu.SendResponse(w,groups,http.StatusOK)
+	for _,pointer := range groups.Groups {
+		response.Groups = append(response.Groups, *pointer)
+	}
+
+	utils.SendResponse(w,response,http.StatusOK)
 }
